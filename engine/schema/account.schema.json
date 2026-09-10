@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Threadsアカウント定義",
+  "description": "1アカウント＝このJSON1枚。生成エンジンはこれだけを読んで投稿を作る。",
+  "type": "object",
+  "required": ["handle", "identity", "target", "persona", "voice", "ng", "funnel"],
+  "properties": {
+    "handle": { "type": "string", "pattern": "^@" },
+    "identity": {
+      "type": "object",
+      "required": ["name", "first_person", "stance"],
+      "properties": {
+        "name": { "type": "string" },
+        "first_person": { "type": "string", "description": "一人称。俺／私／自分など。voice.measured と食い違わせない" },
+        "second_person": { "type": ["string", "null"], "description": "読者の呼び方。使わないなら null（主語なしで書く）" },
+        "stance": { "type": "string", "description": "どの立場から語るか。1行で" },
+        "writes_about": { "type": "string", "description": "この人が書いてること。1行で" }
+      }
+    },
+    "target": {
+      "type": "object",
+      "required": ["situation"],
+      "description": "ターゲットは属性（20代女性）ではなく状況で切る。刺さり方が変わる",
+      "properties": {
+        "situation": { "type": "array", "items": { "type": "string" }, "description": "読者が今いる具体的な場面" },
+        "emotion": { "type": "string", "description": "その場面で抱えてる感情" },
+        "not_for": { "type": "array", "items": { "type": "string" }, "description": "狙わない読者。ここを書くと投稿がブレない" }
+      }
+    },
+    "persona": {
+      "type": "object",
+      "required": ["credential"],
+      "properties": {
+        "credential": { "type": "string", "description": "なぜこの人が語れるのか＝資格。体験で書く" },
+        "weakness": { "type": "array", "items": { "type": "string" }, "description": "出せる弱さ・自白の在庫。人間味はここから出る" },
+        "history": { "type": "string" }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "required": ["measured"],
+      "properties": {
+        "measured": {
+          "type": "object",
+          "description": "engine/extract_voice.py の出力をそのまま入れる。手書きの形容詞では口調は再現できない",
+          "properties": {
+            "measured_from": { "type": "object" },
+            "length": { "type": "object" },
+            "layout": { "type": "object" },
+            "endings_top10": { "type": "array" },
+            "person": { "type": "object" },
+            "surface": { "type": "object" }
+          }
+        },
+        "rules": { "type": "array", "items": { "type": "string" }, "description": "数値に落ちない言語ルール。抽象語禁止・場面を名指しする等" }
+      }
+    },
+    "references": {
+      "type": "array",
+      "maxItems": 3,
+      "description": "参考アカウントは最大3つ。均等ブレンドすると無個性になるので、借りる部位を分ける",
+      "items": {
+        "type": "object",
+        "required": ["handle", "borrow"],
+        "properties": {
+          "handle": { "type": "string" },
+          "borrow": { "enum": ["hook", "rhythm", "structure", "cta"], "description": "hook=1行目の型 / rhythm=文の長さと改行 / structure=構成の運び / cta=締めと導線" },
+          "notes": { "type": "string", "description": "その部位で具体的に何を借りるか" },
+          "measured": { "type": "object", "description": "参考アカの実投稿から抽出した数値（任意）" }
+        }
+      }
+    },
+    "ng": {
+      "type": "object",
+      "description": "禁止事項。プロンプトに書くだけでなく check_post.py が機械判定する",
+      "properties": {
+        "words": { "type": "array", "items": { "type": "string" }, "description": "禁止ワード（完全一致で検出）" },
+        "expressions": { "type": "array", "items": { "type": "string" }, "description": "禁止表現（正規表現）" },
+        "topics": { "type": "array", "items": { "type": "string" }, "description": "触れないテーマ。人が読む用" },
+        "no_questions": { "type": "boolean", "description": "true なら読者への問いかけを禁止（「」内の会話は除外して判定）" },
+        "no_emoji": { "type": "boolean" }
+      }
+    },
+    "themes": {
+      "type": "object",
+      "description": "伸びを決めるのは口調ではなくネタ。リーチ枠といいね枠は別のネタで作る",
+      "properties": {
+        "reach": { "type": "array", "items": { "type": "string" }, "description": "インプレッションを取りにいくテーマ" },
+        "like": { "type": "array", "items": { "type": "string" }, "description": "いいね率が出るテーマ" },
+        "mix": { "type": "string", "description": "1日あたりの配分。例 reach2:like3" },
+        "hook_keywords": { "type": "array", "items": { "type": "string" }, "description": "1枚目に必ず入れるジャンルキーワード" }
+      }
+    },
+    "formats": {
+      "type": "array",
+      "description": "使える型。id は既存の型番号をそのまま使ってよい",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "slides": { "type": "integer" },
+          "slot": { "enum": ["reach", "like"] },
+          "outline": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "funnel": {
+      "type": "object",
+      "required": ["cta_types"],
+      "properties": {
+        "cta_types": { "type": "array", "items": { "type": "string" } },
+        "cta_mix": { "type": "object", "description": "本数あたりの配分。例 {\"note\":5,\"固定\":6}" },
+        "rules": { "type": "array", "items": { "type": "string" } },
+        "links": { "type": "object", "description": "note等のURL。空なら生成時に出さない" }
+      }
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "thread_slides": { "type": "array", "items": { "type": "integer" }, "description": "許容するスレッド枚数" },
+        "code_block_per_slide": { "type": "boolean" },
+        "label_format": { "type": "string" }
+      }
+    }
+  }
+}

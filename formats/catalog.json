@@ -1,0 +1,303 @@
+{
+  "note": "型カタログ。slot は example_title からの機械判定（README『枠の決め方』参照）。実インサイトが出たら手で上書きすること。",
+  "slot_rule": {
+    "reach": "数字リスト型（N個／N つ／N段階／1位）",
+    "like": "誤解訂正・好きの証拠型（は逆／半分しか／別物／本音／〜だけ）"
+  },
+  "formats": [
+    {
+      "id": "型51",
+      "name": "対比リスト",
+      "example_title": "返せなくなってた私に、実際に効いた言い方",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型52",
+      "name": "逆張り誤解訂正",
+      "example_title": "回避型は好きになるのが苦手、は逆",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型53",
+      "name": "対象指定＋翻訳",
+      "example_title": "自分から誘ってばかりで、しんどくなってる人へ",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型54",
+      "name": "やりがちNG",
+      "example_title": "復縁は、返事が来たあとの方がむずかしい",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型56",
+      "name": "セリフ会話再現",
+      "example_title": "彼女に、返信の話を詰められた夜",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型57",
+      "name": "場面サイン",
+      "example_title": "男が本命だとバレるのは、別れ際の30秒",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型58",
+      "name": "セリフ翻訳リスト",
+      "example_title": "好きな人にだけ、送れなくなる言葉",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型60",
+      "name": "論点ずらし",
+      "example_title": "「連絡しない方が好かれる」の、嘘",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型61",
+      "name": "NG／OK",
+      "example_title": "回避型とのLINE、終わらせ方で全部変わる",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型63",
+      "name": "見切りリスト",
+      "example_title": "やめた方がいい復縁、9個",
+      "slot": "reach",
+      "slides": 3
+    },
+    {
+      "id": "型64",
+      "name": "2列対比",
+      "example_title": "本命と都合のいい女は、誘い方の一行で分かれる",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型65",
+      "name": "分岐点特定",
+      "example_title": "本命かどうかは、一回目の誘いの断られ方で決まる",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型69",
+      "name": "日常ワンシーン",
+      "example_title": "男は本命といる時、終電を調べない",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型70",
+      "name": "常識破壊",
+      "example_title": "男が本命に選ぶ子、顔でも若さでもない",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型72",
+      "name": "行動リスト",
+      "example_title": "回避型が溺愛モードに入ると、連絡がこう変わる",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型75",
+      "name": "カウントダウン",
+      "example_title": "男が都合のいい女に絶対やらないこと、3つ",
+      "slot": "reach",
+      "slides": 3
+    },
+    {
+      "id": "型76",
+      "name": "忘れられない一人",
+      "example_title": "自分から別れたのに、忘れられなかった",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型77",
+      "name": "番号付き3サイン",
+      "example_title": "回避型が溺愛してる相手にだけ、隠さなくなるもの",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型78",
+      "name": "三流／二流／一流",
+      "example_title": "「ごめん忙しくて」への返し方、三流・二流・一流",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型79",
+      "name": "逆張り持論",
+      "example_title": "「重い女」って言われる側の話",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型84",
+      "name": "AじゃなくてB",
+      "example_title": "返信が遅い男の頭の中は、こうなってる",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型86",
+      "name": "勘違い／本音",
+      "example_title": "男の行動、たぶん半分は誤解されてる",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型87",
+      "name": "3回リピート",
+      "example_title": "彼が自分から動かない理由、3つ",
+      "slot": "reach",
+      "slides": 3
+    },
+    {
+      "id": "型88",
+      "name": "1位伏せランキング",
+      "example_title": "別れが近づいてる時、男に出るサイン 1位は",
+      "slot": "reach",
+      "slides": 3
+    },
+    {
+      "id": "型90",
+      "name": "男女2リスト",
+      "example_title": "LINEで沼る瞬間、男と女で真逆",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型91",
+      "name": "観察リスト＋追記",
+      "example_title": "うまくいってるカップルの特徴",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型92",
+      "name": "消去法3択",
+      "example_title": "回避型が「この人には返せる」と思う瞬間",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型93",
+      "name": "3段格付け",
+      "example_title": "また会いたいと思われる女性は、別れ際が上手い",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型95",
+      "name": "2タイプ分岐",
+      "example_title": "付き合うと冷める男と、溺愛する男の分かれ道",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型96",
+      "name": "時系列カルテ",
+      "example_title": "連絡が途絶えて30日で、男の中身は入れ替わる",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型97",
+      "name": "力関係リバース",
+      "example_title": "都合のいい女って、軽く見られてるんじゃない",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型98",
+      "name": "やめるリスト",
+      "example_title": "都合のいい女にされやすい人の特徴、5つ",
+      "slot": "reach",
+      "slides": 3
+    },
+    {
+      "id": "型99",
+      "name": "サイン＋判定",
+      "example_title": "男が本命にしてない時、無意識に出る4つ",
+      "slot": "reach",
+      "slides": 3
+    },
+    {
+      "id": "型100",
+      "name": "受け流し→学習",
+      "example_title": "「大丈夫、待つよ」で、男は完全に止まる",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型101",
+      "name": "期待反転",
+      "example_title": "元彼が一番忘れられないのは、静かに別れた女",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型102",
+      "name": "別物ラベル",
+      "example_title": "「話しやすい女」と「手放したくない女」は別物",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型104",
+      "name": "悪化5段階",
+      "example_title": "既読スルーの5段階と、今いる場所",
+      "slot": "reach",
+      "slides": 3
+    },
+    {
+      "id": "型105",
+      "name": "女3つ↔男1つ",
+      "example_title": "「もう連絡しない」って決めた時",
+      "slot": null,
+      "slides": 3
+    },
+    {
+      "id": "型106",
+      "name": "半分だけ正しい",
+      "example_title": "「好きなら連絡するでしょ」は、半分しか合ってない",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型108",
+      "name": "理由あり／なし",
+      "example_title": "男が急に連絡してくる理由、3つとも外れてる",
+      "slot": "reach",
+      "slides": 3
+    },
+    {
+      "id": "型110",
+      "name": "証言まる引用",
+      "example_title": "毎日LINEをくれてた夫の、本音",
+      "slot": "like",
+      "slides": 3
+    },
+    {
+      "id": "型115",
+      "name": "数のズレ",
+      "example_title": "男が沼った子の特徴、6つある",
+      "slot": "reach",
+      "slides": 3
+    }
+  ]
+}
