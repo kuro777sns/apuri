@@ -1,12 +1,37 @@
 ---
 name: threads-engine
-description: アカウント定義JSON（accounts/*.json）を1枚読んで、そのアカウントのThreads投稿を生成する汎用エンジン。キャラごとにスキルを作らない。生成後は必ず engine/check_post.py で機械検品し、FAILが出たら書き直してから出す。トリガー：「エンジンで作って」「<アカウント名>で投稿」「accounts/xxx.json で」「検品して」「口調を測り直して」など。
+description: アカウント定義JSON（accounts/*.json）を1枚読んで、そのアカウントのThreads投稿を生成する汎用エンジン。参考にしたいバズ投稿を送られたら engine/analyze_buzz.py で分解し、骨格だけの型カードにしてから自分のジャンルに applyする（中身は借りない）。生成後は必ず engine/check_post.py で機械検品し、FAILが出たら書き直してから出す。トリガー：「エンジンで作って」「<アカウント名>で投稿」「accounts/xxx.json で」「このバズ投稿を分析して」「なぜ伸びてるか分析」「型だけ借りて」「自分のジャンルに応用して」「検品して」「口調を測り直して」など。
 ---
 
 # Threads 投稿生成エンジン
 
 キャラごとにスキルを書き分けない。**アカウント＝JSON 1枚、生成ロジック＝このスキル1本。**
 新しいアカウントは `accounts/_template.json` をコピーして埋めるだけで増える。
+
+## 0. 参考投稿を分解する（送られてきたとき）
+
+バズ投稿を何本か送られたら、**書き写さずに分解する**。借りるのは骨格だけ。
+
+1. 送られた投稿を1ファイルに保存する。1投稿＝`### 見出し` ＋ コードブロック。
+   数字が分かるなら見出し行に `imp=120000 like=450 save=30` と書く。**入れると精度が段違いに上がる。**
+2. 分解する。
+
+```bash
+PYTHONPATH=engine python3 engine/analyze_buzz.py refs.md --md
+PYTHONPATH=engine python3 engine/analyze_buzz.py refs.md --md --card formats/cards/<名前>.json --name "<名前>"
+```
+
+3. 出た数字を読んで、**伸びてる理由を言葉で説明する**。スクリプトは数えるだけなので、
+   「なぜそれが効くのか」はここで書く。フックの型・文字数配分・仕掛け（未完切り／転換／セリフ引用）
+   のどれが効いているかを名指しする。
+4. 指標があるなら**リーチ枠といいね枠を分けて見る**。インプが大きい本といいね率が高い本は
+   だいたい別のネタで、混ぜて語ると間違える。
+5. 型カード（`formats/cards/*.json`）には本文が入らない。数字と骨格だけ。
+   `_置き換え表` に、参考アカのジャンル語 → 自分のジャンルの同じ役割の語 を埋める。
+
+**やらないこと**：参考投稿の文・言い回し・具体例・たとえ話をそのまま使う。語尾だけ変えて使う。
+借りていいのは「1行目を何字で、どういう切り口で書くか」「何枚で、何字ずつ配るか」
+「どこで切って、どこで転換するか」まで。題材と中身は自分のジャンルで一から作る。
 
 ## 1. アカウント定義を読む
 
@@ -66,9 +91,15 @@ description: アカウント定義JSON（accounts/*.json）を1枚読んで、�
 # 下書きを1本チェック
 PYTHONPATH=engine python3 engine/check_post.py accounts/yu.json draft.md --md
 
+# 参考投稿を見て書いたときは、丸パクリになっていないか必ず一緒に測る
+PYTHONPATH=engine python3 engine/check_post.py accounts/yu.json draft.md --md --against refs.md
+
 # 1日分をまとめて検品（### 見出しごとに1本とみなす）
 PYTHONPATH=engine python3 engine/check_post.py accounts/yu.json posts/today.md --batch
 ```
+
+`--against` は下書きと参考投稿の**最長一致文字列**と**5-gram重複率**を測る。
+最長一致25字以上、または重複35%以上で FAIL。語尾だけ変えた「リライト」はここで止まる。
 
 - **FAIL が1件でも出たら出力しない。** 直してから再度かける。
 - WARN は理由を説明できるなら残してよい。
@@ -103,4 +134,5 @@ PYTHONPATH=engine python3 engine/update_voice.py accounts/yu.json posts/*.md --m
 - キャラ専用スキルを新規に作る（アカウントはJSONで増やす）
 - `voice` に「フランク」「優しい」のような形容詞を書く（数値で書く）
 - 参考アカウントの文をそのまま使う（借りるのは構造とリズムだけ）
+- 参考投稿の語尾だけ変えて出す（`--against` で止まる）
 - 検品を飛ばして出力する

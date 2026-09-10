@@ -45,7 +45,57 @@
 
 FAILがあれば終了コード1を返すので、生成→検品→再生成が自動で回る。
 
-### 3. 参考アカウントは「混ぜる」のではなく「部位を分けて借りる」
+### 3. 参考にしたい投稿は「分解して数字にする」。中身は借りない
+
+伸びてる投稿を送ると、フック・キーワード・文字数・仕掛けを分解して**骨格だけの型カード**にする。
+
+```bash
+PYTHONPATH=engine python3 engine/analyze_buzz.py refs.md --md --card formats/cards/A.json
+```
+
+```
+■ 型64｜本命と都合のいい女は…   imp=182,000 like=94 いいね率0.052% →reach枠
+   フック    男は本命と都合のいい子で、誘い方が違う。
+             20字 / 型=対比
+   文字数    195→232→324 （計751字 / 1文17字）
+   仕掛け    箇条書き・セリフ引用・数字・未完切り・転換
+
+【共通していること＝これが伸びてる理由の候補】
+  フックの型   暴露40%　対比20%　看板20%　時間期限20%
+  フック字数   20〜27字（中央23字）
+  文字数配分   133→232→316（中央値）
+  仕掛け       数字100%　未完切り100%　転換100%　セリフ引用80%　箇条書き60%
+  作法         CTA100%　問いかけ0%　絵文字0%
+```
+
+型カードに**本文は入らない**。入るのは字数・型・仕掛けの分布と、
+「参考アカのジャンル語 → 自分のジャンルの語」の置き換え表だけ。
+だから恋愛の型をそのまま副業アカや育児アカに持っていける。
+
+指標（`imp=` `like=`）を付けると**リーチ枠といいね枠を自動で分ける**。
+上の実例では、インプ18万・24万の本はいいね率0.05%、インプ7千〜1.2万の本はいいね率0.43〜0.55%。
+**巨大インプの本といいねが付く本は、別のネタで作られている。**混ぜて分析すると必ず間違える。
+
+### 4. 丸パクリは精神論ではなく機械で止める
+
+生成物と参考投稿の**最長一致文字列**と**5-gram重複率**を測る。
+
+```bash
+PYTHONPATH=engine python3 engine/check_post.py accounts/mine.json draft.md --md --against refs.md
+```
+
+実データでの校正結果：
+
+| 下書き | 最長一致 | 重複率 | 判定 |
+|---|---|---|---|
+| 参考投稿そのもの | 713字 | 100% | FAIL |
+| **語尾だけ変えた「リライト」** | **205字** | **93%** | **FAIL** |
+| 同じ書き手の別テーマの投稿 | 13字 | 6% | PASS |
+
+「リライトしたつもり」が一番危ない。ここが機械で止まる。
+借りていいのは *1行目を何字でどう切るか・何枚で何字ずつ配るか・どこで転換するか* まで。
+
+### 5. 参考アカウントは「混ぜる」のではなく「部位を分けて借りる」
 
 3アカウントを均等ブレンドすると、3人の平均＝誰でもない人になる。だから借りる部位を分ける。
 
@@ -58,7 +108,7 @@ FAILがあれば終了コード1を返すので、生成→検品→再生成が
 
 中身・体験・思想は本人100%。参考アカの文そのものは写さない。
 
-### 4. 伸びを決めるのは口調ではなくネタ
+### 6. 伸びを決めるのは口調ではなくネタ
 
 口調は差別化であって、伸びの主因ではない。**リーチといいねは別のネタで作られる。**
 
@@ -72,6 +122,9 @@ FAILがあれば終了コード1を返すので、生成→検品→再生成が
 ## 5分で始める
 
 ```bash
+# 0. 参考にしたいバズ投稿を分解する（任意・応用したい型があるとき）
+PYTHONPATH=engine python3 engine/analyze_buzz.py refs.md --md --card formats/cards/A.json
+
 # 1. アカウント定義を作る
 cp accounts/_template.json accounts/mine.json
 # → identity / target / persona / ng / themes / funnel を埋める（voice.measured は空のまま）
@@ -83,8 +136,8 @@ PYTHONPATH=engine python3 engine/update_voice.py accounts/mine.json ref.md --md
 # 3. 生成する（Claude Code で）
 「accounts/mine.json でリーチ枠2本・いいね枠3本」
 
-# 4. 検品する
-PYTHONPATH=engine python3 engine/check_post.py accounts/mine.json draft.md --md
+# 4. 検品する（参考投稿を見て書いたなら --against も付ける）
+PYTHONPATH=engine python3 engine/check_post.py accounts/mine.json draft.md --md --against refs.md
 ```
 
 生成は `.claude/skills/threads-engine/` が担当する。アカウント名を言えば起動する。
@@ -103,9 +156,11 @@ engine/
   schema/account.schema.json  アカウント定義のスキーマ
   extract_voice.py      実投稿 → 口調プロファイル（実測）
   update_voice.py       アカウント定義の voice.measured を更新
-  check_post.py         生成物の機械検品
+  analyze_buzz.py       参考投稿 → なぜ伸びたかの分解＋骨格だけの型カード
+  check_post.py         生成物の機械検品（--against で丸パクリ判定）
 formats/
   catalog.json          型カタログ42種（slot＝reach/like付き）
+  cards/_sample.json    型カードの実例（本文は入っていない）
 .claude/skills/threads-engine/
   SKILL.md              生成エンジン本体
 posts/                  出力の保管場所＋使用ログ
@@ -127,8 +182,15 @@ PYTHONPATH=engine python3 engine/extract_voice.py posts/*.md --md --section 悠 
 # アカウント定義に流し込む
 PYTHONPATH=engine python3 engine/update_voice.py accounts/yu.json posts/*.md --md --section 悠
 
+# 参考投稿を分解する（imp= like= を書いておくとリーチ枠/いいね枠が出る）
+PYTHONPATH=engine python3 engine/analyze_buzz.py refs.md --md
+PYTHONPATH=engine python3 engine/analyze_buzz.py refs.md --md --card formats/cards/A.json --name A型
+
 # 下書きを1本検品
 PYTHONPATH=engine python3 engine/check_post.py accounts/yu.json draft.md --md
+
+# 丸パクリになっていないか一緒に測る
+PYTHONPATH=engine python3 engine/check_post.py accounts/yu.json draft.md --md --against refs.md
 
 # 1日分をまとめて検品（### 見出しごとに1本とみなす）
 PYTHONPATH=engine python3 engine/check_post.py accounts/yu.json posts/today.md --batch

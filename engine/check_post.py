@@ -9,6 +9,7 @@ FAIL が1つでもあれば終了コード1を返すので、生成→チェッ�
     python3 engine/check_post.py accounts/yu.json posts/x.md --md --section 悠
 """
 import argparse
+import difflib
 import json
 import re
 import sys
@@ -18,6 +19,56 @@ from extract_voice import (URL, EMOJI, FIRST_PERSON, as_text, blocks_from_md, bl
 
 CTA_MARKERS = ["プロフ", "固定", "過去の投稿", "過去投稿", "note", "リンク", "https://", "ハイライト"]
 GREEN, RED, YEL, OFF = "\033[32m", "\033[31m", "\033[33m", "\033[0m"
+
+
+def ngrams(text, n=5):
+    t = re.sub(r"\s+", "", URL.sub("", text))
+    return {t[i:i + n] for i in range(len(t) - n + 1)}
+
+
+def similarity(draft, ref):
+    """下書きと参考投稿の近さ。最長一致と5-gram重複率で見る。
+
+    型（構成・文字数配分・フックの作り方）を借りるのは問題ないが、
+    文そのものが残っていると丸パクリになる。文字列として測れば機械で止められる。
+    """
+    a = re.sub(r"\s+", "", URL.sub("", draft))
+    b = re.sub(r"\s+", "", URL.sub("", ref))
+    if not a or not b:
+        return {"lcs": 0, "lcs_text": "", "overlap": 0.0}
+    m = difflib.SequenceMatcher(None, a, b, autojunk=False).find_longest_match(0, len(a), 0, len(b))
+    ga, gb = ngrams(a), ngrams(b)
+    return {
+        "lcs": m.size,
+        "lcs_text": a[m.a:m.a + m.size],
+        "overlap": round(len(ga & gb) / max(1, len(ga)), 3),
+    }
+
+
+def check_similarity(blocks, ref_path, rep):
+    from analyze_buzz import posts_from_md, posts_from_plain
+
+    text = open(ref_path, encoding="utf-8").read()
+    refs = posts_from_md(text) or posts_from_plain(text)
+    if not refs:
+        rep.add("WARN", "[類似度]", f"{ref_path} から参考投稿を読めなかった")
+        return
+
+    draft = "".join(as_text(b) for b in blocks)
+    worst, worst_ref = {"lcs": 0, "lcs_text": "", "overlap": 0.0}, ""
+    for r in refs:
+        sim = similarity(draft, "".join(r["slides"]))
+        if (sim["lcs"], sim["overlap"]) > (worst["lcs"], worst["overlap"]):
+            worst, worst_ref = sim, r["title"]
+
+    pct = round(worst["overlap"] * 100)
+    detail = f"最長一致{worst['lcs']}字・重複{pct}%（対 {worst_ref}）"
+    if worst["lcs"] >= 25 or worst["overlap"] >= 0.35:
+        rep.add("FAIL", "[類似度]", f"参考投稿に寄りすぎ。{detail}「{worst['lcs_text'][:30]}」")
+    elif worst["lcs"] >= 15 or worst["overlap"] >= 0.20:
+        rep.add("WARN", "[類似度]", f"{detail}「{worst['lcs_text'][:30]}」")
+    else:
+        rep.add("OK", "[類似度]", detail)
 
 
 class Report:
@@ -142,6 +193,8 @@ def run_batch(text, acc, a):
         for i, b in enumerate(blocks, 1):
             check_thread(i, b, acc, rep)
         check_post(blocks, acc, rep)
+        if a.against:
+            check_similarity(blocks, a.against, rep)
         f = len(rep.fails())
         total_fail += f
         mark = (RED + "FAIL" + OFF) if color and f else (GREEN + "pass" + OFF if color else ("FAIL" if f else "pass"))
@@ -163,6 +216,7 @@ def main():
     ap.add_argument("--json", action="store_true", help="機械可読で出す")
     ap.add_argument("--batch", action="store_true",
                     help="### 見出しごとに別の投稿として一括チェックする")
+    ap.add_argument("--against", help="参考投稿ファイル。丸パクリになっていないか類似度で見る")
     a = ap.parse_args()
 
     acc = json.load(open(a.account, encoding="utf-8"))
@@ -182,6 +236,8 @@ def main():
     for i, b in enumerate(blocks, 1):
         check_thread(i, b, acc, rep)
     check_post(blocks, acc, rep)
+    if a.against:
+        check_similarity(blocks, a.against, rep)
 
     if a.json:
         print(json.dumps(
