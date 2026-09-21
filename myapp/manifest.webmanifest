@@ -1,0 +1,28 @@
+{
+  "name": "今日のうらない",
+  "short_name": "うらない",
+  "description": "1日1回ひいて、今日の運勢とラッキーな色が分かる小さなアプリ。メモと習慣の記録もできます。",
+  "lang": "ja",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#15181C",
+  "theme_color": "#15181C",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20512%20512%22%20width=%22512%22%20height=%22512%22%3E%3Crect%20width=%22512%22%20height=%22512%22%20rx=%22116%22%20ry=%22116%22%20fill=%22%237FB2E5%22/%3E%3Crect%20x=%2226%22%20y=%2226%22%20width=%22460%22%20height=%22460%22%20rx=%2296%22%20ry=%2296%22%20fill=%22none%22%20stroke=%22%2315181C%22%20stroke-opacity=%220.18%22%20stroke-width=%228%22/%3E%3Ctext%20x=%22256%22%20y=%22300%22%20font-size=%22264%22%20text-anchor=%22middle%22%20font-family=%22Apple%20Color%20Emoji,Segoe%20UI%20Emoji,Noto%20Color%20Emoji,sans-serif%22%3E%F0%9F%94%AE%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20512%20512%22%20width=%22512%22%20height=%22512%22%3E%3Crect%20width=%22512%22%20height=%22512%22%20rx=%22116%22%20ry=%22116%22%20fill=%22%237FB2E5%22/%3E%3Crect%20x=%2226%22%20y=%2226%22%20width=%22460%22%20height=%22460%22%20rx=%2296%22%20ry=%2296%22%20fill=%22none%22%20stroke=%22%2315181C%22%20stroke-opacity=%220.18%22%20stroke-width=%228%22/%3E%3Ctext%20x=%22256%22%20y=%22300%22%20font-size=%22264%22%20text-anchor=%22middle%22%20font-family=%22Apple%20Color%20Emoji,Segoe%20UI%20Emoji,Noto%20Color%20Emoji,sans-serif%22%3E%F0%9F%94%AE%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
