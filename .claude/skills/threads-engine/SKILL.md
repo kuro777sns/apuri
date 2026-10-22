@@ -54,6 +54,7 @@ PYTHONPATH=engine python3 engine/analyze_buzz.py refs.md --md --card formats/car
 | `themes` | reach枠 と like枠 は別のネタで作る。`mix` の比率を守る |
 | `themes.hook_keywords` | 1枚目に最低1語入れる |
 | `funnel` | 全本にCTA。`cta_mix` の配分でローテ。`links` が空ならURLは出さない |
+| `prescription` | 主張の本体。`model` は2行で切り、`moves` から今夜やる1手を渡す。免罪は1行まで |
 | `output` | スレッド枚数、1スライド＝1コードブロック、ラベル形式 |
 
 `references` が入っていたら、**借りる部位だけ**借りる。3アカを均等に混ぜない。
@@ -80,7 +81,10 @@ PYTHONPATH=engine python3 engine/analyze_buzz.py refs.md --md --card formats/car
 - ラベル（`**1スレッド目 / 全3**`）は**コードブロックの外**に置く。
 - スライド番号を本文に書かない。
 - 1枚目は助詞や読点で未完に切って次に送る。
-- CTAの直前に救済の一行を置く（`funnel.rules` に指定があればその語で）。
+- CTAの直前に救済の一行を置く（`funnel.rules` に指定があればその語で）。**ただし1行だけ。**
+- 🚨 **救済は免罪ではなく処方で出す。**「あなたのせいじゃない」で終わらせず、`prescription.moves` から
+  **今夜そのまま実行できる1手**を必ず渡す。理由の説明より処方を長くする。
+  免罪を2行以上重ねた回は、読者から見ると慰められただけで何も渡されていない投稿になる。
 - 読者への問いかけを置かない（`ng.no_questions` が true のとき）。会話の引用「」は残してよい。
 
 ## 4. 検品する（省略禁止）

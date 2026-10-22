@@ -18,6 +18,12 @@ from extract_voice import (URL, EMOJI, FIRST_PERSON, as_text, blocks_from_md, bl
                            reader_questions, sentences, slide_of, tail)
 
 CTA_MARKERS = ["プロフ", "固定", "過去の投稿", "過去投稿", "note", "リンク", "https://", "ハイライト"]
+# 処方＝今夜そのまま実行できる動作。これが無い投稿は「慰めただけ」で保存もされない
+MOVE_VERBS = ["やめる", "やめて", "変える", "変えて", "抜く", "足さない", "出す", "送る", "聞く",
+              "置く", "流す", "止める", "選ばせる", "決めさせる", "待たない", "合わせにいかない"]
+# 免罪。1行までは救済として要るが、重ねると主張が免罪に寄ってターゲットから外れる
+ABSOLUTION = ["せいじゃない", "悪くない", "下手だったわけじゃない", "仕方なかった",
+              "構造の話", "価値の話じゃない", "教わってないだけ", "重かったわけじゃない"]
 GREEN, RED, YEL, OFF = "\033[32m", "\033[31m", "\033[33m", "\033[0m"
 
 
@@ -141,6 +147,34 @@ def check_thread(i, blk, acc, rep):
                 rep.add("WARN", where, f"二人称「{w}」（この人は主語なしで書く）")
 
 
+def check_prescription(blocks, acc, rep):
+    """主張が免罪で終わっていないかを測る。
+
+    理由の説明と免罪だけで終わった投稿は、読者から見ると慰められただけで何も渡されていない。
+    締めの2スレッドに「今夜そのまま実行できる動作」が入っているかを必須にする。
+    """
+    pre = acc.get("prescription")
+    if not pre:
+        rep.add("WARN", "[処方]", "アカウント定義に prescription が無い。投稿が免罪で終わりやすい")
+        return
+
+    closing = "\n".join(as_text(b) for b in blocks[-2:])
+    lines = [l.strip() for l in closing.split("\n") if l.strip()]
+
+    marks = [k for k in pre.get("move_markers", []) if k in closing]
+    verbs = [v for v in MOVE_VERBS if v in closing]
+    if marks and verbs:
+        rep.add("OK", "[処方]", f"今夜やる1手あり（{marks[:2]} / {verbs[:2]}）")
+    else:
+        miss = "動作の語がない" if not verbs else "今夜やる形になっていない"
+        rep.add("FAIL", "[処方]", f"処方が見つからない（{miss}）。例: {pre.get('moves', ['—'])[0]}")
+
+    hit = [l for l in lines if any(w in l for w in ABSOLUTION)]
+    cap = pre.get("absolution_lines_max", 1)
+    if len(hit) > cap:
+        rep.add("WARN", "[処方]", f"免罪が{len(hit)}行で上限{cap}行を超えている（例「{hit[0][:18]}」）")
+
+
 def check_post(blocks, acc, rep):
     meas = acc["voice"]["measured"]
     first, last = blocks[0], blocks[-1]
@@ -163,6 +197,8 @@ def check_post(blocks, acc, rep):
         rep.add("FAIL", "[締め]", "CTAが見つからない（" + " / ".join(acc["funnel"]["cta_types"]) + "）")
     if any("でもね" in r for r in acc["funnel"].get("rules", [])) and "でもね" not in last:
         rep.add("WARN", "[締め]", "CTA直前の救済一行「でもね」がない")
+
+    check_prescription(blocks, acc, rep)
 
     tops = {e["tail"] for e in meas["endings_top10"]}
     ss = [s for b in blocks for s in sentences(as_text(b))]

@@ -3,7 +3,7 @@
   "title": "Threadsアカウント定義",
   "description": "1アカウント＝このJSON1枚。生成エンジンはこれだけを読んで投稿を作る。",
   "type": "object",
-  "required": ["handle", "identity", "target", "persona", "voice", "ng", "funnel"],
+  "required": ["handle", "identity", "target", "persona", "voice", "ng", "prescription", "funnel"],
   "properties": {
     "handle": { "type": "string", "pattern": "^@" },
     "identity": {
@@ -104,6 +104,20 @@
           "slot": { "enum": ["reach", "like"] },
           "outline": { "type": "array", "items": { "type": "string" } }
         }
+      }
+    },
+    "prescription": {
+      "type": "object",
+      "description": "主張の本体。読者が今夜やる1手。ここが空だと投稿が免罪（慰め）で終わる",
+      "required": ["model", "moves"],
+      "properties": {
+        "model": { "type": "string", "description": "相手が動かない理由。1つだけ。2行で言い切る" },
+        "model_lines_max": { "type": "integer", "default": 2, "description": "理由の説明に使える行数の上限" },
+        "absolution": { "type": "string", "description": "免罪の一行。ここで終わらせない" },
+        "absolution_lines_max": { "type": "integer", "default": 1, "description": "免罪に使える行数の上限。超えると慰めただけの投稿になる" },
+        "moves": { "type": "array", "items": { "type": "string" }, "description": "今夜そのまま実行できる動作。心がけは入れない" },
+        "move_markers": { "type": "array", "items": { "type": "string" }, "description": "処方が入っているかを機械判定するための語" },
+        "rules": { "type": "array", "items": { "type": "string" } }
       }
     },
     "funnel": {
